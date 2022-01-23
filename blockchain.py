@@ -23,5 +23,41 @@ class Blockchain:
         }
         return block
 
+    def mine_block(self, data: str) -> dict:
+        previous_block = self.get_previous_block()
+        previous_proof = previous_block["proof"]
+        index = len(self.chain) + 1
+        proof = self.proof_of_work(
+            previous_proof = previous_proof,
+            index = index,
+            data = data
+            )
+        print(proof)
+
     def get_previous_block(self) -> dict:
         return self.chain[-1]
+
+    def _to_digest(self, new_proof: int, previous_proof: int, index: int, data: str) -> bytes:
+        to_digest = str(new_proof ** 2 - previous_proof ** 2 + index) + data
+        # It returns an utf-8 encoded version of the string
+        return to_digest.encode()
+
+    def proof_of_work(self, previous_proof: str, index: int, data: str,) -> int:
+        new_proof = 1
+        check_proof = False
+        
+        while check_proof == False:
+            to_digest = self._to_digest(
+                new_proof = new_proof,
+                previous_proof = previous_proof,
+                index = index,
+                data = data
+                )
+            hash_operation = hl.sha256(to_digest).hexdigest()
+
+            if hash_operation[:4] == "0000":
+                check_proof = True
+            else:
+                new_proof += 1
+
+        return new_proof
