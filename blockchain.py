@@ -33,6 +33,14 @@ class Blockchain:
             data = data
             )
         previous_hash = self._hash(block=previous_block)
+        block = self.create_block(
+            index = index,
+            data = data,
+            proof = proof,
+            previous_hash = previous_hash
+        )
+        self.chain.append(block)
+        return block
 
     def get_previous_block(self) -> dict:
         return self.chain[-1]
@@ -65,3 +73,32 @@ class Blockchain:
                 new_proof += 1
 
         return new_proof
+
+    def is_valid(self) -> bool:
+        previous_block = self.chain[0]
+        block_index = 1
+
+        while block_index < len(self.chain):
+            block = self.chain[block_index]
+
+            if block["previous_hash"] != self._hash(previous_block):
+                return False
+            
+            previous_proof = previous_block["proof"]
+            index, data, proof = block["index"], block["data"], block["proof"]
+            hash_operation = hl.sha256(
+                self._to_digest(
+                    new_proof=proof,
+                    previous_proof=previous_proof,
+                    index=index,
+                    data=data,
+                )
+            ).hexdigest()
+
+            if hash_operation[:4] != "0000":
+                return False
+
+            previous_block = block
+            block_index += 1
+        
+        return True
