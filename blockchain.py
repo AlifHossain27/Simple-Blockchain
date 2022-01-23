@@ -32,7 +32,7 @@ class Blockchain:
             index = index,
             data = data
             )
-        print(proof)
+        previous_hash = self._hash(block=previous_block)
 
     def get_previous_block(self) -> dict:
         return self.chain[-1]
@@ -41,6 +41,10 @@ class Blockchain:
         to_digest = str(new_proof ** 2 - previous_proof ** 2 + index) + data
         # It returns an utf-8 encoded version of the string
         return to_digest.encode()
+
+    def _hash(self,block: dict) -> str:
+        encoded_block = json.dumps(block, sort_keys=True).encode()
+        return hl.sha256(encoded_block).hexdigest()
 
     def proof_of_work(self, previous_proof: str, index: int, data: str,) -> int:
         new_proof = 1
