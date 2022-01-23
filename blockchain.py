@@ -9,11 +9,11 @@ class Blockchain:
     def __init__(self):
         self.chain = []
         initial_block = self.create_block(
-            data="initial block", proof=1, previous_hash="0", index=1
+            index = 1, data = "initial block", proof = 1, previous_hash = "0"
         )
         self.chain.append(initial_block)
 
-    def create_block(self, data: str, proof: int, previous_hash: str, index: int) -> dict:
+    def create_block(self, index: int, data: str, proof: int, previous_hash: str) -> dict:
         block = {
             "index" : index,
             "timestamp" : str(dt.datetime.now()),
@@ -22,3 +22,6 @@ class Blockchain:
             "previous_hash" : previous_hash
         }
         return block
+
+    def get_previous_block(self) -> dict:
+        return self.chain[-1]
